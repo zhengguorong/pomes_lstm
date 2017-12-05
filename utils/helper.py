@@ -44,6 +44,7 @@ def data_process(file_name):
     return datas_vector, word_num_map, words
 
 def generate_batch(batch_size, poems_vec, word_to_int):
+    # 将所有诗词分成n_chunk组，每组大小为batch_size
     n_chunk = len(poems_vec) // batch_size
     x_batches = []
     y_batches = []
@@ -53,9 +54,11 @@ def generate_batch(batch_size, poems_vec, word_to_int):
 
         batches = poems_vec[start_index:end_index]
         length = max(map(len, batches))
+        # 使用空字符填充长度
         x_data = np.full((batch_size, length), word_to_int[' '], np.int32)
         for row in range(batch_size):
             x_data[row, :len(batches[row])] = batches[row]
+        # label数据为x数据＋1位
         y_data = np.copy(x_data)
         y_data[:, :-1] = x_data[:, 1:]
         x_batches.append(x_data)
@@ -66,4 +69,3 @@ def generate_batch(batch_size, poems_vec, word_to_int):
 if __name__ == '__main__':
   data_vector, word_num_map, words = data_process('../data/poetry.txt')
   x, y = generate_batch(64, data_vector, word_num_map)
-  print(len(x))
