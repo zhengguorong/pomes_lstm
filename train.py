@@ -36,7 +36,7 @@ def run_training():
     
     saver = tf.train.Saver(tf.global_variables())
     init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-    with tf.Session() as sess:
+    with tf.Session(config=Session_config) as sess:
         sess.run(init_op)
 
         start_epoch = 0
@@ -61,7 +61,7 @@ def run_training():
                     n += 1
                     if (batch % 50 ==0):
                         print('Epoch: %d, batch: %d, training loss: %.6f, learning_rate: %.6f' % (epoch, batch, loss, FLAGS.learning_rate * (0.97 ** epoch)))
-                if epoch % 6 == 0:
+                if epoch % 2 == 0:
                     saver.save(sess, os.path.join(FLAGS.model_dir, FLAGS.model_prefix), global_step=epoch)
         except KeyboardInterrupt:
             print('## Interrupt manually, try saving checkpoint for now...')
