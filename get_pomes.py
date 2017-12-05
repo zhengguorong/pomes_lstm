@@ -7,7 +7,9 @@ import tensorflow as tf
 from utils.model import rnn_model
 from utils.helper import data_process, generate_batch
 
-tf.app.flags.DEFINE_string('file_path', os.path.abspath('./data/poetry.txt'), 'file name of poems.')
+tf.app.flags.DEFINE_string('file_path', os.path.abspath('./data/poetry.txt'), '原始数据地址')
+tf.app.flags.DEFINE_string('heads', '蟹老板', '藏头诗头内容')
+tf.app.flags.DEFINE_integer('type', 5, '生成5言还是7言')
 FLAGS = tf.app.flags.FLAGS
 batch_size = 1
 
@@ -68,6 +70,11 @@ def get_pomes(heads, type):
                     poem += sentence
                     flag = False
         return poem
-    
-print(get_pomes(u'蟹老板再见',5))
+
+def main(_):
+    print(get_pomes(unicode(FLAGS.heads, "utf-8"), FLAGS.type))
+
+
+if __name__ == '__main__':
+    tf.app.run()
     
