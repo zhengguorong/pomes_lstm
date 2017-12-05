@@ -8,7 +8,7 @@ from utils.model import rnn_model
 from utils.helper import data_process, generate_batch
 
 tf.app.flags.DEFINE_integer('batch_size', 64, 'batch size.')
-tf.app.flags.DEFINE_float('learning_rate', 0.01, 'learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.02, 'learning rate.')
 tf.app.flags.DEFINE_string('model_dir', os.path.abspath('./model'), 'model save path.')
 tf.app.flags.DEFINE_string('file_path', os.path.abspath('./data/poetry.txt'), 'file name of poems.')
 tf.app.flags.DEFINE_string('model_prefix', 'poems', 'model save prefix.')
@@ -26,9 +26,10 @@ def run_training():
     
     input_data = tf.placeholder(tf.int32, [FLAGS.batch_size, None])
     output_targets = tf.placeholder(tf.int32, [FLAGS.batch_size, None])
+    learning_rate = tf.Variable(0.0, trainable=False)  
     
     end_points = rnn_model(model='lstm', input_data=input_data, output_data=output_targets, vocab_size=len(
-        vocabularies), rnn_size=128, num_layers=2, batch_size=64, learning_rate=FLAGS.learning_rate)
+        vocabularies), rnn_size=128, num_layers=2, batch_size=64, learning_rate=learning_rate)
     
     Session_config = tf.ConfigProto(allow_soft_placement=True)
     Session_config.gpu_options.allow_growth = True 
@@ -47,6 +48,8 @@ def run_training():
         print('## start training...')
         try:
             for epoch in range(start_epoch, FLAGS.epochs):
+                # 学习率随训练次数不断减少
+                sess.run(tf.assign(learning_rate, FLAGS.learning_rate * (0.97 ** epoch))) 
                 n = 0
                 n_chunk = len(poems_vector) // FLAGS.batch_size
                 for batch in range(n_chunk):
@@ -57,7 +60,7 @@ def run_training():
                     ], feed_dict={input_data: batches_inputs[n], output_targets: batches_outputs[n]})
                     n += 1
                     if (batch % 50 ==0):
-                        print('Epoch: %d, batch: %d, training loss: %.6f' % (epoch, batch, loss))
+                        print('Epoch: %d, batch: %d, training loss: %.6f, learning_rate: %.6f' % (epoch, batch, loss, FLAGS.learning_rate * (0.97 ** epoch)))
                 if epoch % 6 == 0:
                     saver.save(sess, os.path.join(FLAGS.model_dir, FLAGS.model_prefix), global_step=epoch)
         except KeyboardInterrupt:
