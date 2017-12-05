@@ -12,7 +12,7 @@ def data_process(file_name):
     with open(file_name, "r") as f:
         for line in f.readlines():
             try:
-                # line = line.decode('UTF-8') #如果是python3 把这句注释即可
+                line = line.decode('UTF-8') #如果是python3 把这句注释即可
                 line = line.strip(u'\n')
                 title, content = line.strip(u' ').split(u':')  
                 content = content.replace(u' ',u'')  

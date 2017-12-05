@@ -64,5 +64,5 @@ def get_pomes(heads, type):
                     flag = False
         return poem
     
-print(get_pomes(u'郑国榕',5))
+print(get_pomes(u'蟹老板',5))
     
