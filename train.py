@@ -30,6 +30,9 @@ def run_training():
     end_points = rnn_model(model='lstm', input_data=input_data, output_data=output_targets, vocab_size=len(
         vocabularies), rnn_size=128, num_layers=2, batch_size=64, learning_rate=FLAGS.learning_rate)
     
+    Session_config = tf.ConfigProto(allow_soft_placement=True)
+    Session_config.gpu_options.allow_growth = True 
+    
     saver = tf.train.Saver(tf.global_variables())
     init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
     with tf.Session() as sess:
